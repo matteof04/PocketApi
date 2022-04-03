@@ -24,6 +24,17 @@ repositories {
     mavenCentral()
 }
 
+publishing {
+    publications {
+        create<MavenPublication>("maven"){
+            groupId = project.group as String
+            artifactId = "pocketapi"
+            version = project.version as String
+            from(components["java"])
+        }
+    }
+}
+
 val ktorVersion: String by project
 val logbackVersion: String by project
 
