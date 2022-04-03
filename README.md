@@ -14,6 +14,6 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.matteof04:pocketapi:1.0.0")
+    implementation("com.github.matteof04:PocketApi:1.0.0")
 }
 ```
