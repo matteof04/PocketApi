@@ -11,8 +11,8 @@
  */
 
 plugins {
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.serialization") version "1.6.10"
+    kotlin("jvm") version "1.8.10"
+    kotlin("plugin.serialization") version "1.8.10"
     `java-library`
     `maven-publish`
 }
@@ -41,7 +41,8 @@ val logbackVersion: String by project
 dependencies {
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
-    implementation("io.ktor:ktor-client-serialization:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-client-logging:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")

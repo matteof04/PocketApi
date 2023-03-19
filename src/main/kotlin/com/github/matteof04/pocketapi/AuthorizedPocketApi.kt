@@ -23,26 +23,25 @@ import com.github.matteof04.pocketapi.util.PocketEndpoints
 import com.github.matteof04.pocketapi.util.setPocketHeaders
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
 
 class AuthorizedPocketApi(consumerKey: String, private val accessToken: String) : PocketApi(consumerKey) {
-    fun add(url: String, title: String = "", tweetId: String = "", tags: Tags) = runBlocking {
-        client.post<HttpResponse>(PocketEndpoints.ADD){
+    fun add(url: String, title: String = "", tweetId: String = "", tags: Tags): AddResponse = runBlocking {
+        client.post(PocketEndpoints.ADD){
             setPocketHeaders()
-            body = AddRequest(url, consumerKey, accessToken, title, tweetId, tags)
-        }.receive<AddResponse>()
+            setBody(AddRequest(url, consumerKey, accessToken, title, tweetId, tags))
+        }.body()
     }
-    fun retrieve(parameters: RetrieveParameters) = runBlocking {
-        client.post<HttpResponse>(PocketEndpoints.GET){
+    fun retrieve(parameters: RetrieveParameters): RetrieveResponse = runBlocking {
+        client.post(PocketEndpoints.GET){
             setPocketHeaders()
-            body = RetrieveRequest.fromRetrieveParameters(consumerKey, accessToken, parameters)
-        }.receive<RetrieveResponse>()
+            setBody(RetrieveRequest.fromRetrieveParameters(consumerKey, accessToken, parameters))
+        }.body()
     }
-    fun modify(actions: Array<Action>) = runBlocking {
-        client.post<HttpResponse>(PocketEndpoints.MODIFY){
+    fun modify(actions: Array<Action>): ModifyResponse = runBlocking {
+        client.post(PocketEndpoints.MODIFY){
             setPocketHeaders()
-            body = ModifyRequest(consumerKey, accessToken, actions)
-        }.receive<ModifyResponse>()
+            setBody(ModifyRequest(consumerKey, accessToken, actions))
+        }.body()
     }
 }

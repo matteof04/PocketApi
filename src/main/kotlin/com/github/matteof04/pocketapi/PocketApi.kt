@@ -23,19 +23,18 @@ import com.github.matteof04.pocketapi.util.setPocketHeaders
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.features.logging.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
 
 open class PocketApi(protected val consumerKey: String) {
     protected val client = HttpClient(CIO){
-        install(JsonFeature){
-            serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
+        install(ContentNegotiation){
+            json(Json{
                 ignoreUnknownKeys = true
                 coerceInputValues = true
             })
@@ -53,19 +52,19 @@ open class PocketApi(protected val consumerKey: String) {
             }
         }
     }
-    fun getRequestToken(redirectUri: String) = runBlocking {
-        client.post<HttpResponse>(PocketEndpoints.REQUEST_TOKEN){
+    fun getRequestToken(redirectUri: String): RequestTokenResponse = runBlocking {
+        client.post(PocketEndpoints.REQUEST_TOKEN){
             setPocketHeaders()
-            body = RequestTokenRequest(consumerKey, redirectUri)
-        }.receive<RequestTokenResponse>()
+            setBody(RequestTokenRequest(consumerKey, redirectUri))
+        }.body()
     }
     fun getAuthorizationUrl(requestToken: String, redirectUri: String) = "https://getpocket.com/auth/authorize?request_token=$requestToken&redirect_uri=$redirectUri"
     fun getAuthorizationUrl(redirectUri: String) = getAuthorizationUrl(getRequestToken(redirectUri).requestToken, redirectUri)
-    fun getAccessToken(requestToken: String) = runBlocking {
-        client.post<HttpResponse>(PocketEndpoints.ACCESS_TOKEN){
+    fun getAccessToken(requestToken: String): AccessTokenResponse = runBlocking {
+        client.post(PocketEndpoints.ACCESS_TOKEN){
             setPocketHeaders()
-            body = AccessTokenRequest(consumerKey, requestToken)
-        }.receive<AccessTokenResponse>()
+            setBody(AccessTokenRequest(consumerKey, requestToken))
+        }.body()
     }
     fun getAuthorizedApi(accessToken: String) = AuthorizedPocketApi(consumerKey, accessToken)
 }
