@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "com.github.matteof04"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
