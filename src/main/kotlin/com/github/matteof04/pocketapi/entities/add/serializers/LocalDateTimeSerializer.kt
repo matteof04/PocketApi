@@ -19,12 +19,14 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 class LocalDateTimeSerializer : KSerializer<LocalDateTime> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDateTime", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): LocalDateTime = LocalDateTime.parse(decoder.decodeString().replace(' ', 'T'), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    override fun deserialize(decoder: Decoder): LocalDateTime = runCatching { LocalDateTime.parse(decoder.decodeString().replace(' ', 'T'), DateTimeFormatter.ISO_LOCAL_DATE_TIME) }.getOrDefault(
+        LocalDateTime.ofEpochSecond(0,0, ZoneOffset.UTC))
 
     override fun serialize(encoder: Encoder, value: LocalDateTime) {
         encoder.encodeString(value.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).replace('T', ' '))
